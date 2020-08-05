@@ -3,30 +3,28 @@ const Schema = require("mongoose").Schema;
 var UserSchema = new Schema({
   email: {
     type: String,
-    required: true,
     unique: true,
-    // validate: {
-    //   validator: (email) => /.+@.{2,25}.{2,5}/.test(email),
-    //   message: (props) => `${props.value} is not a valid email!`,
-    // },
+    required: [true, "Email field required"],
+    validate: {
+      validator: (email) =>
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email),
+      message: (props) => `${props.value} is not a valid email!`,
+    },
   },
   password: {
     type: String,
-    required: true,
-    // validate: {
-    //   validator: (password) => /.{6,}/.test(password),
-    //   message: (props) => "Password must be more 6 symbols",
-    // },
+    required: [true, "Password field required"],
+    validate: {
+      validator: (password) => /.{6,}/.test(password),
+      message: (props) => "Password must be more 6 symbols",
+    },
   },
-  nick: {
+  username: {
     type: String,
-    default: "",
+    unique: true,
+    default: "def_user",
   },
 });
-
-// UserSchema.methods.isValidPassword = function (password) {
-//   return this.password === password;
-// };
 
 UserSchema.methods.validPassword = function (password) {
   return this.password === password;
