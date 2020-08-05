@@ -53,9 +53,29 @@ app.get(
   "/api/user/self",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    res.json(req.user);
+    res.json(req.user._id);
   }
 );
+
+app.get("/api/get-score", async (req, res) => {
+  let _res = await User.find({});
+  _res = _res.map((e) => e.username);
+  res.json(_res);
+});
+
+app.put("/api/put-score", async (req, res) => {
+  User.findByIdAndUpdate(
+    { _id: req.body._id },
+    { score: req.body.score },
+    function (err, result) {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(result);
+      }
+    }
+  );
+});
 
 app.listen(PORT, () => {
   console.log(`Server run at port ${PORT}`);

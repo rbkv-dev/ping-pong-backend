@@ -24,6 +24,10 @@ var UserSchema = new Schema({
     unique: true,
     default: "def_user",
   },
+  score: {
+    type: Number,
+    default: 0,
+  },
 });
 
 UserSchema.methods.validPassword = function (password) {
