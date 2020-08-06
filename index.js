@@ -57,8 +57,18 @@ app.get(
   }
 );
 
+app.get("/api/user/score", async (req, res) => {
+  let _res = await User.findOne({ _id: req.body._id }, (err, result) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.send({ score: result.score });
+    }
+  });
+});
+
 app.get("/api/get-score", async (req, res) => {
-  let _res = await User.find({});
+  let _res = await User.find({}).username;
   _res = _res.map((e) => e.username);
   res.json(_res);
 });
