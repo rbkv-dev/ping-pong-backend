@@ -30,10 +30,6 @@ var UserSchema = new Schema({
   },
 });
 
-UserSchema.methods.validPassword = function (password) {
-  return this.password === password;
-};
-
 module.exports = {
   UserSchema,
 };

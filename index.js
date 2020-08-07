@@ -4,6 +4,7 @@ const app = express();
 const bodyParse = require("body-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const { User } = require("./mongodb");
 const { passport, customMiddleware } = require("./authorization");
@@ -14,26 +15,36 @@ app.use(bodyParse.json());
 app.use(cors());
 app.use(express.static(`${__dirname}/static`));
 
-app.post("/api/user/sign-up", async (req, res) => {
-  try {
-    const user = await User.create(req.body);
-    const token = await jwt.sign(
-      { email: user.email, _id: user._id },
-      process.env.SECRET
-    );
-    res.json({
-      email: user.email,
-      username: user.username,
-      _id: user._id,
-      token,
+app.post("/api/user/sign-up", async (req, res, next) => {
+  bcrypt.genSalt(10, function (err, salt) {
+    if (err) return next(err);
+    bcrypt.hash(req.body.password, salt, async function (err, hash) {
+      if (err) return next(err);
+      try {
+        const user = await User.create({
+          username: req.body.username,
+          email: req.body.email,
+          password: hash,
+        });
+
+        const token = await jwt.sign(
+          { email: user.email, _id: user._id },
+          process.env.SECRET
+        );
+
+        res.json({
+          token,
+        });
+      } catch (error) {
+        if (11000 === error.code || 11001 === error.code) {
+          res.json({ message: "This email used" });
+        } else {
+          res.json({ message: error.toString() });
+        }
+      }
     });
-  } catch (error) {
-    if (11000 === error.code || 11001 === error.code) {
-      res.json({ error: "This email used" });
-    } else {
-      res.json({ error: error.toString() });
-    }
-  }
+  });
+  // console.log(req.body);
 });
 
 app.post("/api/user/sign-in", customMiddleware, (req, res) => {
@@ -42,9 +53,6 @@ app.post("/api/user/sign-in", customMiddleware, (req, res) => {
     process.env.SECRET
   );
   res.json({
-    email: req.user.email,
-    username: req.user.username,
-    _id: req.user._id,
     token,
   });
 });
