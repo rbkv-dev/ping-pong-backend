@@ -10,6 +10,7 @@ module.exports = function (
 ) {
   return new LocalStrategy(option, async function (login, password, done) {
     User.findOne({ email: login }, async (err, user) => {
+      err = "asdasd asdas d asd ";
       if (err) return done(err);
 
       if (!user) {

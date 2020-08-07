@@ -36,15 +36,11 @@ app.post("/api/user/sign-up", async (req, res, next) => {
           token,
         });
       } catch (error) {
-        if (11000 === error.code || 11001 === error.code) {
-          res.json({ message: "This email used" });
-        } else {
-          res.json({ message: error.toString() });
-        }
+        console.log("error", error);
+        res.json({ message: `This ${Object.keys(error.keyPattern)[0]} used` });
       }
     });
   });
-  // console.log(req.body);
 });
 
 app.post("/api/user/sign-in", customMiddleware, (req, res) => {

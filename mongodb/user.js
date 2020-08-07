@@ -1,9 +1,16 @@
 const Schema = require("mongoose").Schema;
 
 var UserSchema = new Schema({
+  username: {
+    type: String,
+    unique: true,
+    dropDups: true,
+    default: "def_user",
+  },
   email: {
     type: String,
     unique: true,
+    dropDups: true,
     required: [true, "Email field required"],
     validate: {
       validator: (email) =>
@@ -14,15 +21,10 @@ var UserSchema = new Schema({
   password: {
     type: String,
     required: [true, "Password field required"],
-    validate: {
-      validator: (password) => /.{6,}/.test(password),
-      message: (props) => "Password must be more 6 symbols",
-    },
-  },
-  username: {
-    type: String,
-    unique: true,
-    default: "def_user",
+    // validate: {
+    //   validator: (password) => /^.{6,36}$/.test(password),
+    //   message: (props) => "Password must be between 6 and 36",
+    // },
   },
   score: {
     type: Number,
